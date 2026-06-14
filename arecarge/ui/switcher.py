@@ -27,26 +27,53 @@ class Switcher(tk.Frame):
             self.current_page.destroy()
         screen_w = self.parent.winfo_screenwidth()
         screen_h = self.parent.winfo_screenheight()
-        full_w = max(400, int(screen_w * 0.45))
-        full_h = max(400, int(screen_h * 0.55))
-        inventory_h = max(520, int(screen_h * 0.65))
-        small_w = max(400, int(screen_w * 0.35))
-        small_h = max(300, int(screen_h * 0.35))
+        STANDARD_W = 350
+        STANDARD_H = 400
+        INVENTORY_W = 400
+        INVENTORY_H = 520
+        BOSS_W = 400
+        BOSS_H = 400
+
+        # Respect screen size but clamp to sensible defaults
+        max_w = min(int(screen_w * 0.6), 800)
+        max_h = min(int(screen_h * 0.7), 800)
+
+        std_w = min(max(STANDARD_W, int(screen_w * 0.4)), max_w)
+        std_h = min(max(STANDARD_H, int(screen_h * 0.45)), max_h)
+        inv_h = min(max(INVENTORY_H, int(screen_h * 0.55)), max_h)
+        boss_h = min(max(BOSS_H, int(screen_h * 0.45)), max_h)
+        small_w = max(300, int(screen_w * 0.35))
+        small_h = max(250, int(screen_h * 0.3))
 
         if isinstance(new_page, (gui_home.HomePage, boss_page.BossPage, inventory_page.InventoryPage)):
             if isinstance(new_page, inventory_page.InventoryPage):
-                self.parent.geometry(f"{full_w}x{inventory_h}")
+                self.parent.geometry(f"{INVENTORY_W}x{inv_h}")
+            elif isinstance(new_page, boss_page.BossPage):
+                self.parent.geometry(f"{BOSS_W}x{boss_h}")
             else:
-                self.parent.geometry(f"{full_w}x{full_h}")
+                self.parent.geometry(f"{std_w}x{std_h}")
             new_page.pack(fill="both", expand=True)
             self.current_page = new_page
         else:
-            self.parent.geometry(f"{small_w}x{small_h}")
+            # small dialog-style pages use place and animate from 0 to full size
+            self.parent.geometry(f"{STANDARD_W}x{STANDARD_H}")
             self.parent.update_idletasks()
-            width = self.parent.winfo_width() or small_w
-            height = self.parent.winfo_height() or small_h
-            new_page.place(x=0, y=0, width=width, height=height)
+            target_w = self.parent.winfo_width() or STANDARD_W
+            target_h = self.parent.winfo_height() or STANDARD_H
+            # start small
+            new_page.place(x=0, y=0, width=1, height=1)
             self.current_page = new_page
+
+            steps = 6
+            def animate(step=1):
+                if step > steps:
+                    new_page.place(x=0, y=0, width=target_w, height=target_h)
+                    return
+                w = int(target_w * (step / steps))
+                h = int(target_h * (step / steps))
+                new_page.place(x=0, y=0, width=w, height=h)
+                self.after(25, lambda: animate(step + 1))
+            animate()
 
 
     

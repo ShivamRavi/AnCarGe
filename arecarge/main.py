@@ -14,7 +14,7 @@ from arecarge.abilities import ABILITY_HANDLERS
 from arecarge.bosses import BOSS_UNLOCK_LEVEL
 from arecarge.data.constants import all_abilities
 from arecarge.ui.switcher import Switcher
-from arecarge.ui.pages import gui_home, home_main, done_page as dope, boss_page, inventory_page, distracted_page as disp, ability_page
+from arecarge.ui.pages import gui_home, home_main, done_page as dope, boss_page, inventory_page, distracted_page as disp, ability_page, upgrade_page
 
 io = ConsoleIO()
 rng = random.Random()
@@ -133,12 +133,12 @@ COMMANDS = {
 }
 
 PLAYER_COMMANDS = {
-    "upgrade": lambda p: p.upgrade_ability(),
+    "upgrade": lambda p: sq.put("upgrade"),
     "redeem": lambda p: p.redeem_reward(),
     "done": lambda p: p.task_completed(),
     "distraction": lambda p: p.distraction(),
     "ability": use_ability,
-    "use": use_ask,
+    "use": lambda p: sq.put("inventory"),
     "open": lambda p: p.open_chest(),
     "stats": lambda p: p.print_stats(),
     "save": lambda p: p.save_progress(),
@@ -237,11 +237,11 @@ def main():
     root = tk.Tk()
     root.configure(bg="#FFF6F7")
     root.title("Main UI Window")
-    root.geometry("400x400")
+    root.geometry("350x400")
     root.attributes("-topmost", True)
     switcher = Switcher(root)
     switcher.pack(fill="both", expand=True)
-    switcher.show_page(gui_home.HomePage)
+    switcher.show_page(home_main.HomePage)
 
     def poll_queue():
         try:
@@ -256,12 +256,15 @@ def main():
                     switcher.show_page(disp.DistractedPage)
                     root.after(2000, lambda: switcher.show_page(gui_home.HomePage))
                 elif msg == "start":
-                    switcher.show_page(home_main.HomePage)
-                    root.after(1500, lambda: switcher.show_page(gui_home.HomePage))
+                    # brief celebratory/home splash, then return to main home
+                    switcher.show_page(gui_home.HomePage)
+                    root.after(1500, lambda: switcher.show_page(home_main.HomePage))
                 elif msg == "inventory" or (isinstance(msg, dict) and msg.get("type") == "inventory"):
-                    # inventory page prefers a taller window
                     root.geometry("{}x{}".format(root.winfo_width(), max(root.winfo_height(), 520)))
                     switcher.show_page(inventory_page.InventoryPage, player=current_player)
+                elif msg == "upgrade":
+                    root.geometry("350x400")
+                    switcher.show_page(upgrade_page.UpgradePage, player=current_player)
                 elif isinstance(msg, dict) and msg.get("type") == "boss":
                     root.geometry("{}x{}".format(root.winfo_width(), max(root.winfo_height(), 400)))
                     switcher.show_page(boss_page.BossPage, boss=msg.get("boss"), challenge_time=msg.get("time", 5))

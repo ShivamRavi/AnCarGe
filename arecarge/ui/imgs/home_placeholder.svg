@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+  <rect width="100%" height="100%" fill="#FFF6F7"/>
+  <text x="50%" y="30%" font-size="48" text-anchor="middle" fill="#000">AnCarGe — Home (placeholder)</text>
+  <rect x="50" y="120" width="700" height="300" fill="#FFF" stroke="#ddd"/>
+  <text x="50%" y="70%" font-size="18" text-anchor="middle" fill="#666">This is a placeholder screenshot. Capture real screenshots locally.</text>
+</svg>

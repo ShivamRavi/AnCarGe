@@ -13,6 +13,13 @@ class InventoryPage(tk.Frame):
 
         board = tk.Frame(self, bg="#141B2D")
         board.place(relx=0.5, rely=0.5, anchor="center", width=360, height=360)
+        # ensure cards scale slightly when container is larger
+        self.bind("<Configure>", lambda e: self._on_resize(e, board))
+
+    def _on_resize(self, event, board):
+        w = max(300, int(event.width * 0.85))
+        h = max(320, int(event.height * 0.75))
+        board.place_configure(width=w, height=h)
 
         stats_card = self._card(board, "PLAYER STATS", "#2F3B58", 20, 20, 160, 320)
         self._populate_stats(stats_card)

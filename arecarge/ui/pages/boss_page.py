@@ -56,9 +56,16 @@ class BossPage(tk.Frame):
 
         hp_bar = tk.Frame(card, bg="#333645", bd=2, relief="ridge")
         hp_bar.place(x=170, y=75, width=170, height=26)
-        hp_fill = tk.Frame(hp_bar, bg=style["accent"], width=min(160, max(10, int(160 * (boss.hp / max(boss.hp, 100))))), height=18)
+        try:
+            hp_val = int(getattr(boss, 'hp', 0) or 0)
+        except Exception:
+            hp_val = 0
+        max_hp = max(hp_val, 100)
+        fill_calc = int(160 * (hp_val / max_hp)) if max_hp > 0 else 10
+        fill_width = min(160, max(10, fill_calc))
+        hp_fill = tk.Frame(hp_bar, bg=style["accent"], width=fill_width, height=18)
         hp_fill.place(x=5, y=4)
-        hp_label = tk.Label(card, text=f"HP: {boss.hp}", font=("Press Start 2P", 7), bg="#141A2B", fg="#F8F8F2")
+        hp_label = tk.Label(card, text=f"HP: {hp_val}", font=("Press Start 2P", 7), bg="#141A2B", fg="#F8F8F2")
         hp_label.place(x=170, y=80)
 
         self.timer_label = tk.Label(card, text=f"Time Left: {int(challenge_time)// 60}:{int(challenge_time % 60):02d}", font=("Press Start 2P", 8), bg="#141A2B", fg="#FFB86C")
@@ -81,7 +88,9 @@ class BossPage(tk.Frame):
         draw = ImageDraw.Draw(img)
         draw.rectangle([(0, 0), (width - 1, height - 1)], outline=accent, width=3)
         draw.ellipse([(10, 10), (width - 10, height - 10)], outline=accent, width=3)
-        draw.text((width // 2 - 18, height // 2 - 15), icon, fill=accent)
+        text_x = int(width // 2 - 18)
+        text_y = int(height // 2 - 15)
+        draw.text((text_x, text_y), str(icon), fill=accent)
         return img
 
     def start_challenge(self):

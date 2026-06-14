@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+  <rect width="100%" height="100%" fill="#0F1425"/>
+  <text x="50%" y="30%" font-size="36" text-anchor="middle" fill="#F8F8F2">Inventory (placeholder)</text>
+  <rect x="40" y="100" width="720" height="380" fill="#141B2D" stroke="#222"/>
+  <text x="50%" y="85%" font-size="14" text-anchor="middle" fill="#A0AEC0">Placeholder layout for inventory. Capture real screenshots locally.</text>
+</svg>

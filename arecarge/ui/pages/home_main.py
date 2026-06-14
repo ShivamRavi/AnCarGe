@@ -40,13 +40,24 @@ class HomePage(tk.Frame):
         for label in [self.done_label, self.distracted_label, self.help_label, self.use_label]:
             label.bind("<Button-1>", self.show_arrow)
 
-        cat_img = Image.open("C:/Users/shiva/OneDrive/Desktop/AnCarGe v5/arecarge/ui/imgs/kittycat2.png")
-        tk_cat_img = ImageTk.PhotoImage(cat_img, master=parent)
+        import os
+        imgs_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'imgs'))
+        kitty_path = os.path.join(imgs_dir, 'kittycat2.png')
+        tk_cat_img = None
+        try:
+            cat_img = Image.open(kitty_path)
+            tk_cat_img = ImageTk.PhotoImage(cat_img, master=parent)
+        except Exception:
+            tk_cat_img = None
 
-        cat_label = tk.Label(self, image=tk_cat_img, borderwidth=0,
-                             highlightthickness=0, bg="#FFF6F7")
-        cat_label.image = tk_cat_img  #type: ignore
-        cat_label.grid(row=1, column=0, rowspan=4, pady=20, sticky="e")
+        if tk_cat_img:
+            cat_label = tk.Label(self, image=tk_cat_img, borderwidth=0,
+                                 highlightthickness=0, bg="#FFF6F7")
+            cat_label.image = tk_cat_img  #type: ignore
+            cat_label.grid(row=1, column=0, rowspan=4, pady=20, sticky="e")
+        else:
+            cat_label = tk.Label(self, text="(kitty)", bg="#FFF6F7")
+            cat_label.grid(row=1, column=0, rowspan=4, pady=20, sticky="e")
 
 
         menu_labels = [self.done_label, self.distracted_label, self.help_label, self.use_label]
