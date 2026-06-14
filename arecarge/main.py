@@ -138,7 +138,9 @@ PLAYER_COMMANDS = {
     "done": lambda p: p.task_completed(),
     "distraction": lambda p: p.distraction(),
     "ability": use_ability,
-    "use": lambda p: sq.put("inventory"),
+    "use": lambda p: (sq.put("inventory"), use_ask(p)),
+    "use stash": lambda p: (sq.put("inventory"), use_ask(p)),
+    "use backpack": lambda p: (sq.put("inventory"), use_ask(p)),
     "open": lambda p: p.open_chest(),
     "stats": lambda p: p.print_stats(),
     "save": lambda p: p.save_progress(),
@@ -237,11 +239,11 @@ def main():
     root = tk.Tk()
     root.configure(bg="#FFF6F7")
     root.title("Main UI Window")
-    root.geometry("350x400")
+    root.geometry("350x250")
     root.attributes("-topmost", True)
     switcher = Switcher(root)
     switcher.pack(fill="both", expand=True)
-    switcher.show_page(home_main.HomePage)
+    switcher.show_page(gui_home.HomePage)
 
     def poll_queue():
         try:
@@ -256,17 +258,17 @@ def main():
                     switcher.show_page(disp.DistractedPage)
                     root.after(2000, lambda: switcher.show_page(gui_home.HomePage))
                 elif msg == "start":
-                    # brief celebratory/home splash, then return to main home
-                    switcher.show_page(gui_home.HomePage)
-                    root.after(1500, lambda: switcher.show_page(home_main.HomePage))
+                    # move from splash gui_home to main home and resize
+                    root.geometry("350x400")
+                    switcher.show_page(home_main.HomePage)
                 elif msg == "inventory" or (isinstance(msg, dict) and msg.get("type") == "inventory"):
-                    root.geometry("{}x{}".format(root.winfo_width(), max(root.winfo_height(), 520)))
+                    root.geometry("350x520")
                     switcher.show_page(inventory_page.InventoryPage, player=current_player)
                 elif msg == "upgrade":
                     root.geometry("350x400")
                     switcher.show_page(upgrade_page.UpgradePage, player=current_player)
                 elif isinstance(msg, dict) and msg.get("type") == "boss":
-                    root.geometry("{}x{}".format(root.winfo_width(), max(root.winfo_height(), 400)))
+                    root.geometry("350x520")
                     switcher.show_page(boss_page.BossPage, boss=msg.get("boss"), challenge_time=msg.get("time", 5))
                 elif isinstance(msg, dict) and msg.get("type") == "boss_success":
                     switcher.show_page(boss_page.BossSuccessPage, boss=msg.get("boss"), drops=msg.get("drops"))
